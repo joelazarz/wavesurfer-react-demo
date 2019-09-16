@@ -11,3 +11,27 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+.parent-component {
+  max-width: 100vw;
+  margin-left: 4em;
+  margin-right: 4em;
+  margin-top: 3em;
+}
+
+.wave {
+  color: lavender;
+}
+
+region.wavesurfer-region:before {
+  content: attr(data-region-label);
+  font-size: 0.5em;
+  position: absolute;
+  top: 0;
+}
+
+wavesurfer-region .handle.wavesurfer-handle{
+  min-width: 4px !important ;
+  width: 5% !important;
+
+}

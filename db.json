@@ -1,0 +1,46 @@
+{
+    "regions": [
+
+        {
+            "id": "pad1",
+            "start": 0,
+            "end": 5,
+            "loop": false,
+            "color": "hsla(275, 100%, 50%, 0.38)",
+            "attributes": {
+                "label": "[1]"
+            }
+        },
+        {
+            "id": "pad2",
+            "start": 6,
+            "end": 11,
+            "loop": false,
+            "color": "hsla(275, 100%, 50%, 0.38)",
+            "attributes": {
+                "label": "[1]"
+            }
+        },
+        {
+            "id": "pad3",
+            "start": 12,
+            "end": 17,
+            "loop": false,
+            "color": "hsla(275, 100%, 50%, 0.38)",
+            "attributes": {
+                "label": "[1]"
+            }
+        },
+        {
+            "id": "pad4",
+            "start": 17,
+            "end": 23,
+            "loop": false,
+            "color": "hsla(275, 100%, 50%, 0.38)",
+            "attributes": {
+                "label": "[1]"
+            }
+        }
+
+    ]
+}
