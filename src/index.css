@@ -19,10 +19,6 @@ code {
   margin-top: 3em;
 }
 
-.wave {
-  color: lavender;
-}
-
 region.wavesurfer-region:before {
   content: attr(data-region-label);
   font-size: 0.5em;
@@ -33,5 +29,4 @@ region.wavesurfer-region:before {
 wavesurfer-region .handle.wavesurfer-handle{
   min-width: 4px !important ;
   width: 5% !important;
-
 }
