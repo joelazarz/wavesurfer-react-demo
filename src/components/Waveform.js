@@ -17,6 +17,7 @@ class Waveform extends Component {
     componentDidMount() {
 
         this.el = ReactDOM.findDOMNode(this)
+        console.log(this.el)
         this.waveform = this.el.querySelector('.wave')
         this.wavesurfer = WaveSurfer.create({
             container: this.waveform,
@@ -26,6 +27,7 @@ class Waveform extends Component {
             cursorWidth: 2,
             hideScrollbar: false,
             autoCenter: false,
+            scrollParent: true,
             plugins: [
                 RegionsPlugin.create({
                     slop: 8,
@@ -34,6 +36,7 @@ class Waveform extends Component {
                 })
             ]
         })
+        
 
         ///////// Key Commands
         const triggerOnBtnOne = () => {
@@ -64,16 +67,23 @@ class Waveform extends Component {
             this.wavesurfer.play()
         }
 
+        const mute = () => {
+            this.wavesurfer.toggleMute()
+        }
+
         const stop = () => {
             this.wavesurfer.stop()
+            console.log('THIS.WAVESURFER:', this.wavesurfer)
             console.log('PAD1:',this.wavesurfer.regions.list.pad1)
             console.log('PAD2:',this.wavesurfer.regions.list.pad2)
             console.log('PAD3:',this.wavesurfer.regions.list.pad3)
-            console.log('PAD4:',this.wavesurfer.regions.list.pad4)
+            console.log('PAD4 START:',this.wavesurfer.regions.list.pad4.start)
+            console.log('PAD4 END:',this.wavesurfer.regions.list.pad4.end)
+            console.log('GETPLAYBACKSPEED:', this.wavesurfer.getPlaybackRate(this.wavesurfer))
         }
 
         const slowed = () => {
-            this.wavesurfer.setPlaybackRate(0.88)
+            this.wavesurfer.setPlaybackRate((this.wavesurfer.getPlaybackRate(this.wavesurfer)) - 0.01)
         }
 
         const ogSpeed = () => {
@@ -81,7 +91,7 @@ class Waveform extends Component {
         }
 
         const fast = () => {
-            this.wavesurfer.setPlaybackRate(1.12)
+            this.wavesurfer.setPlaybackRate((this.wavesurfer.getPlaybackRate(this.wavesurfer)) + 0.01)
         }
 
         const skipForward = () => {
@@ -117,6 +127,8 @@ class Waveform extends Component {
                 skipForward()
             } else if (e.keyCode === 37){
                 skipBackward()
+            } else if (e.keyCode === 192){
+                mute()
             } 
         }
 
@@ -144,10 +156,6 @@ class Waveform extends Component {
         console.log('PAD2:',this.wavesurfer.regions.list.pad2)
     }
 
-    // zoomInput = (val) => {
-    //     this.wavesurfer.zoom(Number(val))
-    // }
-
     onZoomIn = () => {
         this.wavesurfer.zoom(Number(50))
     }
@@ -157,23 +165,25 @@ class Waveform extends Component {
     }
 
     render() {
+        console.log('THIS.STATE:', this.state)
         return (
             <div className='waveform' onClick={this.handleSKey}>
             <div className='wave'>
             <div id="waveform"></div>
+            <div id="wave-timeline"></div>
             <button onClick={this.playPause}>Play/Pause</button>
             <button onClick={this.slowedSpeed}>0.75</button>
             <button onClick={this.normalSpeed}>norm</button>
             <button onClick={this.stopBtn}>stop</button>
             <button onClick={this.onZoomOut}>-</button>
             <button onClick={this.onZoomIn}>+</button>
-            
             </div>
             <li>a : play</li>
             <li>s : stop</li>
-            <li>, : speed 0.75</li>
+            <li>` : toggle mute</li>
+            <li>, : speed - 1%</li>
             <li>. : speed 1</li>
-            <li>/ : speed 1.25</li>
+            <li>/ : speed + 1%</li>
             <li>1 : trigger pad 1</li>
             <li>2 : trigger pad 2</li>
             <li>3 : trigger pad 3</li>
