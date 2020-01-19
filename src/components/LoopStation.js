@@ -19,16 +19,15 @@ export class LoopStation extends Component {
         autoCenter: false,
         scrollParent: true,
         plugins: [
-          RegionsPlugin.create({
-            loopSelection: true
-          })
+          RegionsPlugin.create()
         ]
     })
+    this.wavesurfer.on('finish', () => this.playLooped())
   }
   
   playLooped = () => {
     let clip = this.wavesurfer.regions.list.loop;
-    clip.playLoop()
+    clip.play()
   }
   
   loadBuffer = () => {
@@ -41,7 +40,7 @@ export class LoopStation extends Component {
       id: 'loop',
       start: 0,
       end: endPoint,
-      loop: true,
+      // loop: true,
       color: 'rgb(255, 82, 82, 0.4)',
     }
 
