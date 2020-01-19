@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import WaveSurfer from 'wavesurfer.js'
 import RegionsPlugin from 'wavesurfer.js/src/plugin/regions.js'
 import regionsObj from './Regions';
+import LoopStation from './LoopStation';
 
 class Waveform extends Component {
 
@@ -10,14 +11,14 @@ class Waveform extends Component {
         super(props)
         this.state = {  
             data: null,
-            regions: null
+            regions: null,
+            newBuffer: null
         }
     }
 
     componentDidMount() {
 
         this.el = ReactDOM.findDOMNode(this)
-        console.log(this.el)
         this.waveform = this.el.querySelector('.wave')
         this.wavesurfer = WaveSurfer.create({
             container: this.waveform,
@@ -73,13 +74,6 @@ class Waveform extends Component {
 
         const stop = () => {
             this.wavesurfer.stop()
-            console.log('THIS.WAVESURFER:', this.wavesurfer)
-            console.log('PAD1:',this.wavesurfer.regions.list.pad1)
-            console.log('PAD2:',this.wavesurfer.regions.list.pad2)
-            console.log('PAD3:',this.wavesurfer.regions.list.pad3)
-            console.log('PAD4 START:',this.wavesurfer.regions.list.pad4.start)
-            console.log('PAD4 END:',this.wavesurfer.regions.list.pad4.end)
-            console.log('GETPLAYBACKSPEED:', this.wavesurfer.getPlaybackRate(this.wavesurfer))
         }
 
         const slowed = () => {
@@ -152,8 +146,6 @@ class Waveform extends Component {
 
     stopBtn = () => {
         this.wavesurfer.stop()
-        console.log('PAD1:',this.wavesurfer.regions.list.pad1)
-        console.log('PAD2:',this.wavesurfer.regions.list.pad2)
     }
 
     onZoomIn = () => {
@@ -164,8 +156,32 @@ class Waveform extends Component {
         this.wavesurfer.zoom(Number(0))
     }
 
+    copyBuffer = () => {
+        this.wavesurfer.stop()
+        let originalBuffer = this.wavesurfer.backend.buffer;
+
+        let pad2Start = this.wavesurfer.regions.list.pad2.start;
+        let pad2End = this.wavesurfer.regions.list.pad2.end;
+
+        let emptySegment = this.wavesurfer.backend.ac.createBuffer(
+            originalBuffer.numberOfChannels,
+            // add 0.5 seconds to end of new empty buffer to allow region 'out' event to trigger -- ?
+            ((pad2End - pad2Start) * originalBuffer.sampleRate) + 0.5,
+            originalBuffer.sampleRate
+        );
+
+        for (let i = 0; i < originalBuffer.numberOfChannels; i++) {
+            let channelData = originalBuffer.getChannelData(i);
+            let emptySegmentData = emptySegment.getChannelData(i);
+            let newBufferData = channelData.subarray( (pad2Start * originalBuffer.sampleRate), (pad2End * originalBuffer.sampleRate));
+            emptySegmentData.set(newBufferData);
+        };
+
+        this.setState({newBuffer: emptySegment});
+        console.log('STATE OBJ:', this.state.newBuffer);
+    }
+
     render() {
-        console.log('THIS.STATE:', this.state)
         return (
             <div className='waveform' onClick={this.handleSKey}>
             <div className='wave'>
@@ -177,6 +193,7 @@ class Waveform extends Component {
             <button onClick={this.stopBtn}>stop</button>
             <button onClick={this.onZoomOut}>-</button>
             <button onClick={this.onZoomIn}>+</button>
+            <button onClick={this.copyBuffer}>Copy Buffer</button>
             </div>
             <li>a : play</li>
             <li>s : stop</li>
@@ -190,6 +207,16 @@ class Waveform extends Component {
             <li>4 : trigger pad 4</li>
             <li>left : skip back 5 seconds</li>
             <li>right : skip forward 5 seconds</li>
+            <br></br>
+            <br></br>
+            <span>copy buffer currently copies the contents of region 2 (above) into a new Audio Buffer/instance of wavesurfer below - working on getting it to loop</span>
+            <br></br>
+            <br></br>
+            <span>TO DO - being able to copy the data from multiple regions in order to concatenate them into a new Audio Buffer/instance of wavesurfer below</span>
+            <br></br>
+
+            <LoopStation newBuffer={this.state.newBuffer}/>
+
         </div>
         )
     }
