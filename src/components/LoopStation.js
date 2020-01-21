@@ -31,8 +31,7 @@ export class LoopStation extends Component {
   }
   
   loadBuffer = () => {
-    console.log(this.props.newBuffer)
-    this.wavesurfer.loadDecodedBuffer(this.props.newBuffer)
+    this.wavesurfer.loadDecodedBuffer(this.props.concatenatedBuffers)
 
     let endPoint = parseFloat(this.wavesurfer.getDuration())
 

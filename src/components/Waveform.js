@@ -11,8 +11,9 @@ class Waveform extends Component {
         super(props)
         this.state = {  
             data: null,
-            regions: null,
-            newBuffer: null
+            regions: [],
+            bufferArr: [],
+            concatenatedBuffers: null
         }
     }
 
@@ -37,7 +38,6 @@ class Waveform extends Component {
                 })
             ]
         })
-        
 
         ///////// Key Commands
         const triggerOnBtnOne = () => {
@@ -156,30 +156,81 @@ class Waveform extends Component {
         this.wavesurfer.zoom(Number(0))
     }
 
-    copyBuffer = () => {
+    //////////////////////////////////////////
+    // functions for copying audio buffer data
+    // & concatenating them together
+
+    copyRegionOne = () => {
+        let regionOne = this.wavesurfer.regions.list.pad1;
+        this.copyBuffer(regionOne);
+    }
+
+    copyRegionTwo = () => {
+        let regionTwo = this.wavesurfer.regions.list.pad2
+        this.copyBuffer(regionTwo)
+    }
+
+    copyRegionThree = () => {
+        let regionThree = this.wavesurfer.regions.list.pad3
+        this.copyBuffer(regionThree)
+    }
+
+    copyRegionFour = () => {
+        let regionFour = this.wavesurfer.regions.list.pad4
+        this.copyBuffer(regionFour)
+    }
+
+    copyBuffer = (region) => {
         this.wavesurfer.stop()
         let originalBuffer = this.wavesurfer.backend.buffer;
 
-        let pad2Start = this.wavesurfer.regions.list.pad2.start;
-        let pad2End = this.wavesurfer.regions.list.pad2.end;
+        let padStart = region.start;
+        let padEnd = region.end;
 
         let emptySegment = this.wavesurfer.backend.ac.createBuffer(
             originalBuffer.numberOfChannels,
-            // add 0.5 seconds to end of new empty buffer to allow region 'out' event to trigger -- ?
-            ((pad2End - pad2Start) * originalBuffer.sampleRate) + 0.5,
+            ((padEnd - padStart) * originalBuffer.sampleRate),
             originalBuffer.sampleRate
         );
 
         for (let i = 0; i < originalBuffer.numberOfChannels; i++) {
             let channelData = originalBuffer.getChannelData(i);
             let emptySegmentData = emptySegment.getChannelData(i);
-            let newBufferData = channelData.subarray( (pad2Start * originalBuffer.sampleRate), (pad2End * originalBuffer.sampleRate));
-            emptySegmentData.set(newBufferData);
+            let newBufferData = channelData.subarray((padStart * originalBuffer.sampleRate), (padEnd * originalBuffer.sampleRate));
+            emptySegmentData.set(newBufferData); // occassionally throws RangeError: Source is too large
+        };
+        
+        this.setState({bufferArr: [...this.state.bufferArr, emptySegment]});
+    }
+
+    concatBuffer = () => {
+        let stateBuffers = this.state.bufferArr;
+        let ogBuffer = this.wavesurfer.backend.ac;
+        let stateBuffersLength = stateBuffers.length;
+        let channels = [];
+        let totalDuration = 0;
+    
+        for(var a = 0; a < stateBuffersLength; a++){
+            channels.push(stateBuffers[a].numberOfChannels);// Store all number of channels to choose the lowest one after
+            totalDuration += stateBuffers[a].duration;// Get the total duration of the new buffer when every buffer will be added/concatenated
+        };
+    
+        let numberOfChannels = channels.reduce(function(a, b) { return Math.min(a, b); });;// The lowest value contained in the array channels
+        let tmp = ogBuffer.createBuffer(numberOfChannels, ogBuffer.sampleRate * totalDuration, ogBuffer.sampleRate);
+    
+        for (var b = 0; b < numberOfChannels; b++) {
+            var channel = tmp.getChannelData(b);
+            var dataIndex = 0;
+    
+            for(var c = 0; c < stateBuffersLength; c++) {
+                channel.set(stateBuffers[c].getChannelData(b), dataIndex);
+                dataIndex += stateBuffers[c].length;// Next position where we should store the next buffer values
+            };
         };
 
-        this.setState({newBuffer: emptySegment});
-        console.log('STATE OBJ:', this.state.newBuffer);
+        this.setState({concatenatedBuffers: tmp});
     }
+
 
     render() {
         return (
@@ -193,7 +244,11 @@ class Waveform extends Component {
             <button onClick={this.stopBtn}>stop</button>
             <button onClick={this.onZoomOut}>-</button>
             <button onClick={this.onZoomIn}>+</button>
-            <button onClick={this.copyBuffer}>Copy Buffer</button>
+            <button onClick={this.copyRegionOne}>Copy Region One</button>
+            <button onClick={this.copyRegionTwo}>Copy Region Two</button>
+            <button onClick={this.copyRegionThree}>Copy Region Three</button>
+            <button onClick={this.copyRegionFour}>Copy Region Four</button>
+            <button onClick={this.concatBuffer}>Concat buffers</button>
             </div>
             <li>a : play</li>
             <li>s : stop</li>
@@ -215,7 +270,7 @@ class Waveform extends Component {
             <span>TO DO - being able to copy the data from multiple regions in order to concatenate them into a new Audio Buffer/instance of wavesurfer below</span>
             <br></br>
 
-            <LoopStation newBuffer={this.state.newBuffer}/>
+            <LoopStation concatenatedBuffers={this.state.concatenatedBuffers}/>
 
         </div>
         )
