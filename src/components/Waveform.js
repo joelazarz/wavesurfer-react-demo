@@ -182,22 +182,27 @@ class Waveform extends Component {
 
     copyBuffer = (region) => {
         this.wavesurfer.stop()
-        let originalBuffer = this.wavesurfer.backend.buffer;
+        var originalBuffer = this.wavesurfer.backend.buffer;
 
-        let padStart = region.start;
-        let padEnd = region.end;
+        var padStart = region.start;
+        var padEnd = region.end;
 
-        let emptySegment = this.wavesurfer.backend.ac.createBuffer(
+        var emptySegment = this.wavesurfer.backend.ac.createBuffer(
             originalBuffer.numberOfChannels,
             ((padEnd - padStart) * originalBuffer.sampleRate),
             originalBuffer.sampleRate
         );
 
-        for (let i = 0; i < originalBuffer.numberOfChannels; i++) {
-            let channelData = originalBuffer.getChannelData(i);
-            let emptySegmentData = emptySegment.getChannelData(i);
+        for (var i = 0; i < originalBuffer.numberOfChannels; i++) {
+            var channelData = originalBuffer.getChannelData(i);
+            var emptySegmentData = emptySegment.getChannelData(i);
             let newBufferData = channelData.subarray((padStart * originalBuffer.sampleRate), (padEnd * originalBuffer.sampleRate));
-            emptySegmentData.set(newBufferData); // occassionally throws RangeError: Source is too large
+            if (emptySegmentData.length === newBufferData.length) {
+                emptySegmentData.set(newBufferData); // occassionally throws RangeError: Source is too large
+            } else {
+                let newBufferData = channelData.subarray((padStart * originalBuffer.sampleRate), (padEnd * originalBuffer.sampleRate) - 1); // maybe this is a fix?
+                emptySegmentData.set(newBufferData); 
+            };
         };
         
         this.setState({bufferArr: [...this.state.bufferArr, emptySegment]});
