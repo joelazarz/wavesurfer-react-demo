@@ -39,8 +39,7 @@ export class LoopStation extends Component {
       id: 'loop',
       start: 0,
       end: endPoint,
-      // loop: true,
-      color: 'rgb(255, 82, 82, 0.4)',
+      color: 'transparent',
     }
 
     this.wavesurfer.addRegion(loopRegion)

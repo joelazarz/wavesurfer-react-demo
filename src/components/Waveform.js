@@ -11,7 +11,6 @@ class Waveform extends Component {
         super(props)
         this.state = {  
             data: null,
-            regions: [],
             bufferArr: [],
             concatenatedBuffers: null
         }
@@ -215,7 +214,7 @@ class Waveform extends Component {
         let channels = [];
         let totalDuration = 0;
     
-        for(var a = 0; a < stateBuffersLength; a++){
+        for (var a = 0; a < stateBuffersLength; a++) {
             channels.push(stateBuffers[a].numberOfChannels);
             totalDuration += stateBuffers[a].duration; // length of new buffer - sum of every buffers length in state bufferArr
         };
@@ -226,10 +225,20 @@ class Waveform extends Component {
         for (var b = 0; b < numberOfChannels; b++) {
             var channel = joinedBuffer.getChannelData(b);
             var dataIndex = 0;
-    
+
+            
             for(var c = 0; c < stateBuffersLength; c++) {
-                channel.set(stateBuffers[c].getChannelData(b), dataIndex);
-                dataIndex += stateBuffers[c].length;// position to store the next buffer values
+                var newChannelData = stateBuffers[c].getChannelData(b);
+                if (channel.length === newChannelData.length * stateBuffersLength) {
+                    channel.set(newChannelData, dataIndex);
+                    dataIndex += newChannelData.length;// position to store the next buffer values
+                    console.log('channel length:', channel.length)
+                    console.log('newChannelData length:', newChannelData.length * stateBuffersLength)
+                } else {
+                    console.log('RangeError - channel length and new channel length are not equal');
+                    console.log('channel length:', channel.length)
+                    console.log('newChannelData length:', newChannelData.length * stateBuffersLength)
+                };
             };
         };
 
