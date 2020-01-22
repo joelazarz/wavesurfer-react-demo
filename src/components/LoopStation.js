@@ -22,37 +22,26 @@ export class LoopStation extends Component {
           RegionsPlugin.create()
         ]
     })
-    this.wavesurfer.on('finish', () => this.playLooped())
+    this.wavesurfer.on('finish', () => this.playLooped());
   }
   
   playLooped = () => {
-    let clip = this.wavesurfer.regions.list.loop;
-    clip.play()
-  }
+    this.wavesurfer.play();
+  };
 
   stopLoop = () => {
-    this.wavesurfer.stop()
-  }
+    this.wavesurfer.stop();
+  };
   
   loadBuffer = () => {
-    this.wavesurfer.loadDecodedBuffer(this.props.concatenatedBuffers)
-
-    let endPoint = parseFloat(this.wavesurfer.getDuration())
-
-    let loopRegion = {
-      id: 'loop',
-      start: 0,
-      end: endPoint,
-      color: 'transparent',
-    }
-
-    this.wavesurfer.addRegion(loopRegion);
-  }
+    if (this.props.concatenatedBuffers === null) {return;};
+    this.wavesurfer.loadDecodedBuffer(this.props.concatenatedBuffers);
+  };
 
   clearBuffer = () => {
-    this.wavesurfer.empty()
-    this.props.clearLoop()
-  }
+    this.wavesurfer.empty();
+    this.props.clearLoop();
+  };
 
 
 
@@ -69,7 +58,7 @@ export class LoopStation extends Component {
         
       </div>
     )
-  }
-}
+  };
+};
 
-export default LoopStation
+export default LoopStation;

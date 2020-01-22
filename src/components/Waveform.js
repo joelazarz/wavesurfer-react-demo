@@ -36,123 +36,123 @@ class Waveform extends Component {
                     regions: regionsObj
                 })
             ]
-        })
+        });
 
         ///////// Key Commands
         const triggerOnBtnOne = () => {
-            this.wavesurfer.stop()
+            this.wavesurfer.stop();
             let clip = this.wavesurfer.regions.list.pad1;
-            clip.play()
-        }
+            clip.play();
+        };
 
         const triggerOnBtnTwo = () => {
-            this.wavesurfer.stop()
+            this.wavesurfer.stop();
             let clip = this.wavesurfer.regions.list.pad2;
-            clip.play()
-        }
+            clip.play();
+        };
         
         const triggerOnBtnThree = () => {
-            this.wavesurfer.stop()
+            this.wavesurfer.stop();
             let clip = this.wavesurfer.regions.list.pad3;
-            clip.play()
-        }
+            clip.play();
+        };
 
         const triggerOnBtnFour = () => {
-            this.wavesurfer.stop()
+            this.wavesurfer.stop();
             let clip = this.wavesurfer.regions.list.pad4;
-            clip.play()
-        }
+            clip.play();
+        };
 
         const play = () => {
-            this.wavesurfer.play()
-        }
+            this.wavesurfer.play();
+        };
 
         const mute = () => {
-            this.wavesurfer.toggleMute()
-        }
+            this.wavesurfer.toggleMute();
+        };
 
         const stop = () => {
-            this.wavesurfer.stop()
-        }
+            this.wavesurfer.stop();
+        };
 
         const slowed = () => {
-            this.wavesurfer.setPlaybackRate((this.wavesurfer.getPlaybackRate(this.wavesurfer)) - 0.01)
-        }
+            this.wavesurfer.setPlaybackRate((this.wavesurfer.getPlaybackRate(this.wavesurfer)) - 0.01);
+        };
 
         const ogSpeed = () => {
-            this.wavesurfer.setPlaybackRate(1)
-        }
+            this.wavesurfer.setPlaybackRate(1);
+        };
 
         const fast = () => {
-            this.wavesurfer.setPlaybackRate((this.wavesurfer.getPlaybackRate(this.wavesurfer)) + 0.01)
-        }
+            this.wavesurfer.setPlaybackRate((this.wavesurfer.getPlaybackRate(this.wavesurfer)) + 0.01);
+        };
 
         const skipForward = () => {
-            this.wavesurfer.skipForward(5)
-        }
+            this.wavesurfer.skipForward(5);
+        };
 
         const skipBackward = () => {
-            this.wavesurfer.skipBackward(5)
-        }
+            this.wavesurfer.skipBackward(5);
+        };
 
         //////////// Key Handler
         const handleKey = (e) => {
-            e.stopPropagation()
+            e.stopPropagation();
             if(e.keyCode === 49){
-                triggerOnBtnOne()
+                triggerOnBtnOne();
             } else if (e.keyCode === 50){
-                triggerOnBtnTwo()
+                triggerOnBtnTwo();
             } else if (e.keyCode === 51){
-                triggerOnBtnThree()
+                triggerOnBtnThree();
             } else if (e.keyCode === 52){
-                triggerOnBtnFour()
+                triggerOnBtnFour();
             } else if (e.keyCode === 83){
-                stop()
+                stop();
             } else if (e.keyCode === 65){
-                play()
+                play();
             } else if (e.keyCode === 188){
-                slowed()
+                slowed();
             } else if (e.keyCode === 190){
-                ogSpeed()
+                ogSpeed();
             } else if (e.keyCode === 191){
-                fast()
+                fast();
             } else if (e.keyCode === 39){
-                skipForward()
+                skipForward();
             } else if (e.keyCode === 37){
-                skipBackward()
+                skipBackward();
             } else if (e.keyCode === 192){
-                mute()
-            } 
-        }
+                mute();
+            }; 
+        };
 
         this.wavesurfer.load(this.props.src);
-        this.setState({ data: this.wavesurfer })
+        this.setState({ data: this.wavesurfer });
         window.addEventListener('keydown', handleKey);
-    }
+    };
 
     playPause = () => {
-        this.wavesurfer.playPause()
-    }
+        this.wavesurfer.playPause();
+    };
 
     slowedSpeed = () => {
-        this.wavesurfer.setPlaybackRate(0.75)
-    }
+        this.wavesurfer.setPlaybackRate(0.75);
+    };
 
     normalSpeed = () => {
-        this.wavesurfer.setPlaybackRate(1)
-    }
+        this.wavesurfer.setPlaybackRate(1);
+    };
 
     stopBtn = () => {
-        this.wavesurfer.stop()
-    }
+        this.wavesurfer.stop();
+    };
 
     onZoomIn = () => {
-        this.wavesurfer.zoom(Number(50))
-    }
+        this.wavesurfer.zoom(Number(50));
+    };
 
     onZoomOut = () => {
-        this.wavesurfer.zoom(Number(0))
-    }
+        this.wavesurfer.zoom(Number(0));
+    };
 
     //////////////////////////////////////////
     // functions for copying audio buffer data
@@ -161,25 +161,25 @@ class Waveform extends Component {
     copyRegionOne = () => {
         let regionOne = this.wavesurfer.regions.list.pad1;
         this.copyBuffer(regionOne);
-    }
+    };
 
     copyRegionTwo = () => {
-        let regionTwo = this.wavesurfer.regions.list.pad2
-        this.copyBuffer(regionTwo)
-    }
+        let regionTwo = this.wavesurfer.regions.list.pad2;
+        this.copyBuffer(regionTwo);
+    };
 
     copyRegionThree = () => {
-        let regionThree = this.wavesurfer.regions.list.pad3
-        this.copyBuffer(regionThree)
-    }
+        let regionThree = this.wavesurfer.regions.list.pad3;
+        this.copyBuffer(regionThree);
+    };
 
     copyRegionFour = () => {
-        let regionFour = this.wavesurfer.regions.list.pad4
-        this.copyBuffer(regionFour)
-    }
+        let regionFour = this.wavesurfer.regions.list.pad4;
+        this.copyBuffer(regionFour);
+    };
 
     copyBuffer = (region) => {
-        this.wavesurfer.stop()
+        this.wavesurfer.stop();
         var originalBuffer = this.wavesurfer.backend.buffer;
 
         var padStart = region.start;
@@ -204,7 +204,7 @@ class Waveform extends Component {
             };
         };
         this.setState({bufferArr: [...this.state.bufferArr, emptySegment]});
-    }
+    };
 
     concatBuffer = () => {
         let stateBuffers = this.state.bufferArr;
@@ -213,7 +213,7 @@ class Waveform extends Component {
         let channels = [];
         let totalDuration = 0;
 
-        if (stateBuffersLength === 0) { return; }
+        if (stateBuffersLength === 0) {return;}
     
         for (var a = 0; a < stateBuffersLength; a++) {
             channels.push(stateBuffers[a].numberOfChannels);
@@ -223,37 +223,37 @@ class Waveform extends Component {
         let numberOfChannels = channels.reduce(function(a, b) { return Math.min(a, b); });;
         let joinedBuffer = ogBuffer.createBuffer(numberOfChannels, ogBuffer.sampleRate * totalDuration, ogBuffer.sampleRate);
         
-        console.log('joinedBuffer.length', joinedBuffer.length)
+        console.log('joinedBuffer.length', joinedBuffer.length);
 
         for (var b = 0; b < numberOfChannels; b++) {
-            var newChannelDataSum = null
+            var newChannelDataSum = null;
             var channel = joinedBuffer.getChannelData(b);
             var dataIndex = 0;
 
             for(var c = 0; c < stateBuffersLength; c++) {
                 var newChannelData = stateBuffers[c].getChannelData(b);
-                console.log('logic:', channel.length >= newChannelData.length + newChannelDataSum)
+                console.log('logic:', channel.length >= newChannelData.length + newChannelDataSum);
                 if (channel.length >= newChannelData.length + newChannelDataSum) {
-                    newChannelDataSum += newChannelData.length
-                    console.log('channel.length:', channel.length)
-                    console.log('newChannelData.length:', newChannelData.length)
-                    console.log('newChannelDataSum:', newChannelDataSum)
+                    newChannelDataSum += newChannelData.length;
+                    console.log('channel.length:', channel.length);
+                    console.log('newChannelData.length:', newChannelData.length);
+                    console.log('newChannelDataSum:', newChannelDataSum);
                     channel.set(newChannelData, dataIndex);
                     dataIndex += newChannelData.length; // position to store the next buffer values
                 } else {
-                    console.log('Range Error hit')
+                    console.log('Range Error hit');
                     channel.set(newChannelData, dataIndex - 1);
-                }
+                };
             };
         };
 
         this.setState({concatenatedBuffers: joinedBuffer});
-    }
+    };
 
     clearLoop = () => {
-        this.setState({bufferArr: []})
-        this.setState({concatenatedBuffers: null})
-    }
+        this.setState({bufferArr: []});
+        this.setState({concatenatedBuffers: null});
+    };
 
 
     render() {
@@ -298,12 +298,12 @@ class Waveform extends Component {
 
         </div>
         )
-    }
+    };
 
-}
+};
 
 Waveform.defaultProps = {
     src: ""
-}
+};
 
-export default Waveform
+export default Waveform;
