@@ -29,6 +29,10 @@ export class LoopStation extends Component {
     let clip = this.wavesurfer.regions.list.loop;
     clip.play()
   }
+
+  stopLoop = () => {
+    this.wavesurfer.stop()
+  }
   
   loadBuffer = () => {
     this.wavesurfer.loadDecodedBuffer(this.props.concatenatedBuffers)
@@ -42,8 +46,12 @@ export class LoopStation extends Component {
       color: 'transparent',
     }
 
-    this.wavesurfer.addRegion(loopRegion)
+    this.wavesurfer.addRegion(loopRegion);
+  }
 
+  clearBuffer = () => {
+    this.wavesurfer.empty()
+    this.props.clearLoop()
   }
 
 
@@ -54,6 +62,8 @@ export class LoopStation extends Component {
         <div className="loop-wave">
         <button onClick={this.loadBuffer}>Load Buffer</button>
         <button onClick={this.playLooped}>Play Loop</button>
+        <button onClick={this.stopLoop}>Stop Loop</button>
+        <button onClick={this.clearBuffer}>Clear Loop</button>
           <div id="loop-waveform"></div>
         </div>
         

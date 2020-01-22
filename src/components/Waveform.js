@@ -198,12 +198,11 @@ class Waveform extends Component {
             if (emptySegmentData.length === newBufferData.length) {
                 emptySegmentData.set(newBufferData); // occassionally throws RangeError: Source is too large
             } else {
-                console.log('RangeError: Source is too large - run else')
+                // console.log('RangeError: Source is too large - run else')
                 let newBufferData = channelData.subarray((padStart * originalBuffer.sampleRate), (padEnd * originalBuffer.sampleRate) - 1); // maybe this is a fix?
                 emptySegmentData.set(newBufferData); 
             };
         };
-        
         this.setState({bufferArr: [...this.state.bufferArr, emptySegment]});
     }
 
@@ -213,36 +212,47 @@ class Waveform extends Component {
         let stateBuffersLength = stateBuffers.length;
         let channels = [];
         let totalDuration = 0;
+
+        if (stateBuffersLength === 0) { return; }
     
         for (var a = 0; a < stateBuffersLength; a++) {
             channels.push(stateBuffers[a].numberOfChannels);
             totalDuration += stateBuffers[a].duration; // length of new buffer - sum of every buffers length in state bufferArr
         };
-    
+
         let numberOfChannels = channels.reduce(function(a, b) { return Math.min(a, b); });;
         let joinedBuffer = ogBuffer.createBuffer(numberOfChannels, ogBuffer.sampleRate * totalDuration, ogBuffer.sampleRate);
-    
+        
+        console.log('joinedBuffer.length', joinedBuffer.length)
+
         for (var b = 0; b < numberOfChannels; b++) {
+            var newChannelDataSum = null
             var channel = joinedBuffer.getChannelData(b);
             var dataIndex = 0;
 
-            
             for(var c = 0; c < stateBuffersLength; c++) {
                 var newChannelData = stateBuffers[c].getChannelData(b);
-                if (channel.length === newChannelData.length * stateBuffersLength) {
+                console.log('logic:', channel.length >= newChannelData.length + newChannelDataSum)
+                if (channel.length >= newChannelData.length + newChannelDataSum) {
+                    newChannelDataSum += newChannelData.length
+                    console.log('channel.length:', channel.length)
+                    console.log('newChannelData.length:', newChannelData.length)
+                    console.log('newChannelDataSum:', newChannelDataSum)
                     channel.set(newChannelData, dataIndex);
-                    dataIndex += newChannelData.length;// position to store the next buffer values
-                    console.log('channel length:', channel.length)
-                    console.log('newChannelData length:', newChannelData.length * stateBuffersLength)
+                    dataIndex += newChannelData.length; // position to store the next buffer values
                 } else {
-                    console.log('RangeError - channel length and new channel length are not equal');
-                    console.log('channel length:', channel.length)
-                    console.log('newChannelData length:', newChannelData.length * stateBuffersLength)
-                };
+                    console.log('Range Error hit')
+                    channel.set(newChannelData, dataIndex - 1);
+                }
             };
         };
 
         this.setState({concatenatedBuffers: joinedBuffer});
+    }
+
+    clearLoop = () => {
+        this.setState({bufferArr: []})
+        this.setState({concatenatedBuffers: null})
     }
 
 
@@ -284,7 +294,7 @@ class Waveform extends Component {
             <span>TO DO - being able to copy the data from multiple regions in order to concatenate them into a new Audio Buffer/instance of wavesurfer below</span>
             <br></br>
 
-            <LoopStation concatenatedBuffers={this.state.concatenatedBuffers}/>
+            <LoopStation concatenatedBuffers={this.state.concatenatedBuffers} clearLoop={this.clearLoop}/>
 
         </div>
         )
