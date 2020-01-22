@@ -131,7 +131,6 @@ class Waveform extends Component {
         window.addEventListener('keydown', handleKey);
     }
 
-
     playPause = () => {
         this.wavesurfer.playPause()
     }
@@ -200,6 +199,7 @@ class Waveform extends Component {
             if (emptySegmentData.length === newBufferData.length) {
                 emptySegmentData.set(newBufferData); // occassionally throws RangeError: Source is too large
             } else {
+                console.log('RangeError: Source is too large - run else')
                 let newBufferData = channelData.subarray((padStart * originalBuffer.sampleRate), (padEnd * originalBuffer.sampleRate) - 1); // maybe this is a fix?
                 emptySegmentData.set(newBufferData); 
             };
@@ -216,24 +216,24 @@ class Waveform extends Component {
         let totalDuration = 0;
     
         for(var a = 0; a < stateBuffersLength; a++){
-            channels.push(stateBuffers[a].numberOfChannels);// Store all number of channels to choose the lowest one after
-            totalDuration += stateBuffers[a].duration;// Get the total duration of the new buffer when every buffer will be added/concatenated
+            channels.push(stateBuffers[a].numberOfChannels);
+            totalDuration += stateBuffers[a].duration; // length of new buffer - sum of every buffers length in state bufferArr
         };
     
-        let numberOfChannels = channels.reduce(function(a, b) { return Math.min(a, b); });;// The lowest value contained in the array channels
-        let tmp = ogBuffer.createBuffer(numberOfChannels, ogBuffer.sampleRate * totalDuration, ogBuffer.sampleRate);
+        let numberOfChannels = channels.reduce(function(a, b) { return Math.min(a, b); });;
+        let joinedBuffer = ogBuffer.createBuffer(numberOfChannels, ogBuffer.sampleRate * totalDuration, ogBuffer.sampleRate);
     
         for (var b = 0; b < numberOfChannels; b++) {
-            var channel = tmp.getChannelData(b);
+            var channel = joinedBuffer.getChannelData(b);
             var dataIndex = 0;
     
             for(var c = 0; c < stateBuffersLength; c++) {
                 channel.set(stateBuffers[c].getChannelData(b), dataIndex);
-                dataIndex += stateBuffers[c].length;// Next position where we should store the next buffer values
+                dataIndex += stateBuffers[c].length;// position to store the next buffer values
             };
         };
 
-        this.setState({concatenatedBuffers: tmp});
+        this.setState({concatenatedBuffers: joinedBuffer});
     }
 
 
